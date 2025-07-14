@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Profesor - Edwcaliik</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-color: #f7f7f7;
+            color: #333;
+            padding-top: 70px; /* Ajusta este valor si el header tiene una altura diferente */
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #555;
+            font-size: 1.2em;
+        }
+
+        #welcome-user {
+            font-weight: bold;
+            color: #555;
+            margin-right: 20px;
+        }
+        
+        header nav a {
+            text-decoration: none;
+            color: #555;
+            margin-left: 20px;
+            transition: color 0.3s ease;
+        }
+
+        header nav a:hover {
+            color: #2E7D32; /* Color verde de tu paleta */
+        }
+
+        .main-content {
+            padding: 30px 0;
+        }
+
+        .main-content h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-align: center;
+        }
+
+        /* Sección de funciones (cards) */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            cursor: pointer; /* Indicar que son clickeables */
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-card .icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            background-color: #E8F5E9; /* Un verde claro */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feature-card .icon svg {
+            width: 35px;
+            height: 35px;
+            fill: #2E7D32; /* Color verde oscuro */
+        }
+
+        .feature-card h3 {
+            font-size: 1.5em;
+            color: #2E7D32;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .feature-card .btn-action {
+            background-color: #2E7D32;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .feature-card .btn-action:hover {
+            background-color: #388E3C; /* Un verde un poco más oscuro */
+        }
+
+        /* Sección de Búsqueda de Estudiantes (nueva) */
+        .student-search-section {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .student-search-section h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input-group input, .search-input-group select {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #333;
+            outline: none;
+        }
+
+        .search-input-group button {
+            background-color: #2196F3; /* Un azul para buscar */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-input-group button:hover {
+            background-color: #1976D2;
+        }
+
+        #student-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #fdfdfd;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .student-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .student-item span {
+            font-size: 1.05em;
+            color: #444;
+        }
+
+        .student-item .details-btn {
+            background-color: #607D8B; /* Gris azulado */
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .student-item .details-btn:hover {
+            background-color: #455A64;
+        }
+
+        /* Mensajes de feedback para subida */
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .message.success {
+            color: #28a745; /* Verde */
+        }
+
+        .message.error {
+            color: #dc3545; /* Rojo */
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+
+        .footer-content {
+            padding: 0 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #welcome-user {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            header nav {
+                margin-top: 10px;
+            }
+            header nav a {
+                margin-left: 0;
+                margin-right: 15px;
+            }
+            .main-content h1 {
+                font-size: 2em;
+            }
+            .features-grid {
+                grid-template-columns: 1fr; /* Una columna en móviles */
+            }
+            .search-input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .student-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .student-item .details-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <span class="logo">Edwcaliik</span>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span id="welcome-user"></span>
+                <nav>
+                    <a href="#" id="logout-btn">Cerrar Sesión</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="main-content">
+        <div class="container">
+            <h1>👨‍🏫 Panel del Profesor</h1>
+
+            <div class="features-grid">
+                <div class="feature-card" id="manage-grades-card">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9v-2h2v2zm0-4H9V7h2v2zm3 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm3 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
+                        </svg>
+                    </div>
+                    <h3>Controlar Notas</h3>
+                    <p>Revisa y gestiona las calificaciones de tus estudiantes por materia.</p>
+                    <button class="btn-action">Ver y Editar</button>
+                </div>
+
+                <div class="feature-card" id="upload-grades-card">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.59L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2v9.67z"/>
+                        </svg>
+                    </div>
+                    <h3>Subir Notas (Archivo)</h3>
+                    <p>Carga calificaciones masivamente desde hojas de cálculo.</p>
+                    <input type="file" id="grades-file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none;">
+                    <button class="btn-action" id="upload-grades-btn">Subir Archivo</button>
+                    <p id="uploadGradesMessage" class="message"></p>
+                </div>
+
+                <div class="feature-card" id="upload-plans-card">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/>
+                        </svg>
+                    </div>
+                    <h3>Planes de Estudio</h3>
+                    <p>Gestiona y sube los planes de estudio para tus materias.</p>
+                    <input type="file" id="plans-file-input" accept=".pdf, .doc, .docx" style="display: none;">
+                    <button class="btn-action" id="upload-plans-btn">Subir Archivo</button>
+                    <p id="uploadPlansMessage" class="message"></p>
+                </div>
+            </div>
+
+            <div class="student-search-section">
+                <h2>Buscar Estudiantes por Curso</h2>
+                <div class="search-input-group">
+                    <select id="course-select">
+                        <option value="">Selecciona un Curso</option>
+                        </select>
+                    <input type="text" id="student-name-search" placeholder="Buscar por nombre...">
+                    <button id="search-students-btn">Buscar</button>
+                </div>
+                <div id="student-list">
+                    <p style="text-align: center; color: #777;">Selecciona un curso o busca un estudiante para ver la lista.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; 2025 Edwcaliik. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Inicialización de Supabase
+        const supabaseUrl = "https://aamvnpvfzmnrrfurovuv.supabase.co";
+        const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E";
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const welcomeUserSpan = document.getElementById("welcome-user");
+            const logoutBtn = document.getElementById("logout-btn");
+            const courseSelect = document.getElementById("course-select");
+            const studentNameSearch = document.getElementById("student-name-search");
+            const searchStudentsBtn = document.getElementById("search-students-btn");
+            const studentListDiv = document.getElementById("student-list");
+
+            // Elementos para la funcionalidad de subir archivos (inputs ocultos y botones)
+            const gradesFileInput = document.getElementById('grades-file-input');
+            const uploadGradesBtn = document.getElementById('upload-grades-btn');
+            const plansFileInput = document.getElementById('plans-file-input');
+            const uploadPlansBtn = document.getElementById('upload-plans-btn');
+            const manageGradesCard = document.getElementById('manage-grades-card');
+
+            // Mensajes de feedback para subida de archivos
+            const uploadGradesMessage = document.getElementById('uploadGradesMessage');
+            const uploadPlansMessage = document.getElementById('uploadPlansMessage');
+
+            // Nombres de los buckets de Storage (¡AHORA AMBOS APUNTAN A BUCKETS DIFERENTES SEGÚN LO SOLICITADO!)
+            const GRADES_BUCKET_NAME = 'documentos-estudiantes'; // Para notas
+            const PLANS_BUCKET_NAME = 'planes-de-estudio'; // Para planes
+
+
+            // 1. Verificar si el usuario está logueado como profesor
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            const userRole = localStorage.getItem("userRole");
+
+            if (!currentUser || userRole !== "profesor" || !currentUser.id || !currentUser.nombre) {
+                // Si no es profesor o no está logueado, redirigir al login
+                alert("Acceso denegado. Por favor, inicia sesión como profesor.");
+                window.location.href = "login-profesores.html"; // Asegúrate de que esta sea la página de login de profesores
+                return;
+            }
+
+            // Mostrar el nombre del profesor
+            welcomeUserSpan.textContent = `Bienvenido, Prof. ${currentUser.nombre}`;
+            console.log("ID del profesor actual:", currentUser.id);
+
+            // Lógica de Cerrar Sesión
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem("currentUser");
+                    localStorage.removeItem("userRole"); // Limpiar también el rol
+                    localStorage.removeItem("userName"); // Limpiar también el nombre
+                    window.location.href = "login-profesores.html";
+                });
+            }
+
+            // --- Funcionalidad de Gestión de Notas (Card Clickeable) ---
+            manageGradesCard.addEventListener('click', () => {
+                window.location.href=("notas-profesores.html")
+                // Aquí podrías redirigir a una nueva página o abrir un modal
+                // window.location.href = "gestionar-notas-profesor.html"; 
+            });
+
+
+            // --- Funcionalidad de Subir Notas (Archivo) ---
+            uploadGradesBtn.addEventListener('click', () => {
+                gradesFileInput.click(); // Disparar el clic en el input de tipo file
+            });
+
+            gradesFileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    uploadGradesMessage.textContent = '';
+                    return;
+                }
+
+                uploadGradesMessage.textContent = 'Subiendo archivo de notas...';
+                uploadGradesMessage.classList.remove('success', 'error');
+
+                // Define la ruta donde se guardará el archivo en el bucket
+                // Se guarda en una carpeta 'notas/' con el nombre original del archivo
+                const filePath = `notas/${file.name}`; 
+
+                try {
+                    const { data, error } = await supabase.storage
+                        .from(GRADES_BUCKET_NAME) // Usa el bucket correcto: documentos-estudiantes
+                        .upload(filePath, file, {
+                            cacheControl: '3600', // Cache por 1 hora
+                            upsert: false // No sobrescribir si el archivo ya existe
+                        });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    uploadGradesMessage.textContent = '¡Archivo de notas subido correctamente!';
+                    uploadGradesMessage.classList.remove('error');
+                    uploadGradesMessage.classList.add('success');
+                    // Opcional: Aquí podrías añadir la lógica para procesar el contenido del archivo de notas (CSV/Excel)
+                    // y actualizar tu tabla de 'notas' en Supabase si es necesario.
+                    // Para ello, tendrías que leer el archivo (FileReader) y luego hacer inserts/updates a la tabla 'notas'.
+
+                } catch (error) {
+                    console.error("Error al subir archivo de notas a Supabase Storage:", error);
+                    uploadGradesMessage.textContent = `Error al subir archivo de notas: ${error.message || error.error || 'Desconocido'}`;
+                    uploadGradesMessage.classList.remove('success');
+                    uploadGradesMessage.classList.add('error');
+                } finally {
+                    gradesFileInput.value = ''; // Limpiar el input de archivo
+                }
+            });
+
+            // --- Funcionalidad de Subir Planes de Estudio ---
+            uploadPlansBtn.addEventListener('click', () => {
+                plansFileInput.click(); // Disparar el clic en el input de tipo file
+            });
+
+            plansFileInput.addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+        uploadPlansMessage.textContent = '';
+        return;
+    }
+
+    uploadPlansMessage.textContent = 'Subiendo plan de estudio...';
+    uploadPlansMessage.classList.remove('success', 'error');
+
+    // Nueva ruta simplificada, sin ID ni carpetas por profesor
+    const cleanName = file.name.replace(/\s+/g, '-').replace(/[^\w.-]/g, '');
+    const filePath = `planes/${Date.now()}-${cleanName}`;
+
+    try {
+        const { data, error } = await supabase.storage
+            .from(PLANS_BUCKET_NAME)
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (error) throw error;
+
+        uploadPlansMessage.textContent = '¡Plan de estudio subido correctamente!';
+        uploadPlansMessage.classList.remove('error');
+        uploadPlansMessage.classList.add('success');
+
+    } catch (error) {
+        console.error("Error al subir plan de estudio a Supabase Storage:", error);
+        uploadPlansMessage.textContent = `Error al subir plan de estudio: ${error.message || error.error || 'Desconocido'}`;
+        uploadPlansMessage.classList.remove('success');
+        uploadPlansMessage.classList.add('error');
+    } finally {
+        plansFileInput.value = ''; // Limpiar el input de archivo
+    }
+});
+
+
+
+            // --- Lógica para cargar y filtrar estudiantes ---
+
+            // Cargar cursos disponibles (asegúrate de tener una tabla 'cursos' o similar)
+            async function loadCourses() {
+                try {
+                    const { data, error } = await supabase.from('cursos').select('id, nombre_curso');
+                    if (error) throw error;
+
+                    courseSelect.innerHTML = '<option value="">Selecciona un Curso</option>';
+                    data.forEach(course => {
+                        const option = document.createElement('option');
+                        option.value = course.id;
+                        option.textContent = course.nombre_curso;
+                        courseSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error("Error al cargar cursos:", error.message);
+                    alert("No se pudieron cargar los cursos disponibles.");
+                }
+            }
+
+            // Función para buscar y mostrar estudiantes
+            async function searchAndDisplayStudents() {
+                studentListDiv.innerHTML = '<p style="text-align: center; color: #777;">Cargando estudiantes...</p>';
+                const selectedCourseId = courseSelect.value;
+                const searchTerm = studentNameSearch.value.toLowerCase().trim();
+
+                try {
+                    let query = supabase.from('estudiantes').select('id, nombre, curso_id, cursos(nombre_curso)'); // Elimina 'apellido' de la selección
+
+                    if (selectedCourseId) {
+                        query = query.eq('curso_id', selectedCourseId);
+                    }
+                    if (searchTerm) {
+                        // Buscar por nombre o apellido que contenga el término de búsqueda
+                        query = query.or(`nombre.ilike.%${searchTerm}%`); // Ahora solo busca en 'nombre'
+                    }
+
+                   const { data: students, error } = await query.order('nombre', { ascending: true });
+
+                    if (error) throw error;
+
+                    studentListDiv.innerHTML = ''; // Limpiar lista
+                    if (students.length === 0) {
+                        studentListDiv.innerHTML = '<p style="text-align: center; color: #777;">No se encontraron estudiantes con los criterios de búsqueda.</p>';
+                        return;
+                    }
+
+                    students.forEach(student => {
+                        const studentItem = document.createElement('div');
+                        studentItem.classList.add('student-item');
+                        studentItem.innerHTML = `
+    <span>${student.nombre} (${student.cursos ? student.cursos.nombre_curso : 'N/A'})</span>
+    <button class="details-btn" data-student-id="${student.id}" data-student-name="${student.nombre}">Ver Detalles</button>
+`;
+                        studentListDiv.appendChild(studentItem);
+                    });
+
+                    // Añadir event listeners a los botones "Ver Detalles"
+                    studentListDiv.querySelectorAll('.details-btn').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const studentId = e.target.dataset.studentId;
+                            const studentName = e.target.dataset.studentName;
+                            alert(`Ver detalles y notas de: ${studentName} (ID: ${studentId})\n(Aquí podrías redirigir a una página de perfil de estudiante con sus notas o abrir un modal)`);
+                            // window.location.href = `ver-notas-estudiante.html?id=${studentId}`; // Ejemplo de redirección
+                        });
+                    });
+
+                } catch (error) {
+                    console.error("Error al buscar estudiantes:", error.message);
+                    studentListDiv.innerHTML = '<p style="text-align: center; color: #e74c3c;">Error al cargar estudiantes. Inténtalo de nuevo.</p>';
+                }
+            }
+
+            // Cargar cursos al inicio
+            await loadCourses();
+
+            // Event Listeners para la búsqueda de estudiantes
+            searchStudentsBtn.addEventListener('click', searchAndDisplayStudents);
+            courseSelect.addEventListener('change', searchAndDisplayStudents);
+            // Puedes añadir un evento 'input' también para búsqueda en tiempo real por nombre
+            // studentNameSearch.addEventListener('input', searchAndDisplayStudents);
+            
+            // Cargar estudiantes iniciales (sin filtros)
+            searchAndDisplayStudents();
+        });
+    </script>
+</body>
+</html>

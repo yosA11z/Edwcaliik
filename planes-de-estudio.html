@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planes de Estudio - Edwcaliik</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Inter', sans-serif;
+      background-color: #f7f7f7;
+      color: #333;
+      padding-top: 70px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    header {
+      background-color: #fff;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-weight: bold;
+      color: #555;
+      font-size: 1.2em;
+    }
+
+    #welcome-user {
+      font-weight: bold;
+      color: #555;
+      margin-right: 20px;
+    }
+
+    header nav a {
+      text-decoration: none;
+      color: #555;
+      margin-left: 20px;
+      transition: color 0.3s ease;
+    }
+
+    header nav a:hover {
+      color: #2E7D32;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px 0;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2.2em;
+      text-align: center;
+    }
+
+    .section-card {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+    }
+
+    .section-card h2 {
+      font-size: 1.8em;
+      color: #2E7D32;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .plan-item {
+      padding: 12px 0;
+      border-bottom: 1px dashed #eee;
+      font-size: 1.1em;
+    }
+
+    .plan-item:last-child {
+      border-bottom: none;
+    }
+
+    .plan-item a {
+      color: #2196F3;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .plan-item a:hover {
+      text-decoration: underline;
+    }
+
+    .back-button {
+      background-color: #607D8B;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      width: fit-content;
+    }
+
+    .back-button:hover {
+      background-color: #455A64;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+      font-size: 0.9em;
+      border-top: 4px solid #2E7D32;
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      #welcome-user {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+
+      header nav {
+        margin-top: 10px;
+      }
+
+      header nav a {
+        margin-left: 0;
+        margin-right: 15px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <span class="logo">Edwcaliik</span>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <span id="welcome-user"></span>
+        <nav>
+          <a href="#" id="logout-btn">Cerrar Sesión</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <section class="main-content">
+    <div class="container">
+      <h1>📖 Planes de Estudio</h1>
+
+      <div class="section-card">
+        <h2>Todos los Archivos de Planes de Estudio</h2>
+        <div id="plans-list">
+          <p class="text-center text-gray-500">Cargando planes de estudio desde Storage...</p>
+        </div>
+        <div class="flex justify-center mt-6">
+          <a href="estudiantes.html" class="back-button">Volver al Panel</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-content">
+      <p>&copy; 2025 Edwcaliik. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = "https://aamvnpvfzmnrrfurovuv.supabase.co";
+    const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const welcomeUserSpan = document.getElementById("welcome-user");
+      const logoutBtn = document.getElementById("logout-btn");
+      const plansListDiv = document.getElementById("plans-list");
+
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (!currentUser || !currentUser.id || !currentUser.nombre) {
+        alert("Acceso denegado. Por favor, inicia sesión.");
+        window.location.href = "login-estudiantes.html";
+        return;
+      }
+
+      welcomeUserSpan.textContent = `Bienvenido, ${currentUser.nombre}`;
+
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("currentUser");
+        window.location.href = "login-estudiantes.html";
+      });
+
+      async function listAllFilesRecursively(bucket, prefix) {
+  let result = [];
+
+  const { data, error } = await supabase.storage.from(bucket).list(prefix, {
+    limit: 100,
+    offset: 0,
+    sortBy: { column: "name", order: "asc" },
+  });
+
+  if (error) throw error;
+
+  for (const item of data) {
+    const fullPath = `${prefix}${item.name}`;
+    if (item.id) {
+      // Archivos reales tienen ID; carpetas no.
+      result.push({ ...item, fullPath });
+    } else {
+      // Si es carpeta, recursivamente sigue
+      const subItems = await listAllFilesRecursively(bucket, `${fullPath}/`);
+      result = result.concat(subItems);
+    }
+  }
+
+  return result;
+}
+
+
+      async function loadStudyPlansFromStorage() {
+        try {
+          plansListDiv.innerHTML = '<p class="text-center text-gray-500">Cargando todos los planes de estudio...</p>';
+          const bucketName = "planes-de-estudio";
+          const rootPath = "planes/";
+
+          const allFiles = await listAllFilesRecursively(bucketName, "planes/");
+
+          if (allFiles.length === 0) {
+            plansListDiv.innerHTML = '<p class="text-center text-gray-500">No hay archivos de planes de estudio en el Storage aún.</p>';
+            return;
+          }
+
+          let html = "";
+          allFiles.forEach(file => {
+            const { data: publicUrlData } = supabase.storage.from(bucketName).getPublicUrl(file.fullPath);
+            html += `
+              <div class="plan-item">
+                <a href="${publicUrlData.publicUrl}" target="_blank" rel="noopener noreferrer">
+                  📄 ${file.name}
+                </a>
+              </div>`;
+          });
+
+          plansListDiv.innerHTML = html;
+        } catch (err) {
+          console.error("Error al cargar planes:", err.message);
+          plansListDiv.innerHTML = '<p class="text-center text-red-500">Error al cargar los archivos. Revisa los permisos del bucket o la conexión.</p>';
+        }
+      }
+
+      await loadStudyPlansFromStorage();
+    });
+  </script>
+</body>
+</html>

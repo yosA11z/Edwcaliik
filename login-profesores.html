@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio Sesión - Profesores</title>
+    <style>
+        /* CSS Integrado (adaptado de login-estudiantes.html) */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 800px; /* Ajustar según sea necesario */
+            max-width: 95%;
+        }
+
+        .seccion-bienvenida {
+            background-color: #38b461; /* Color verde de la imagen */
+            color: #fff;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            width: 40%; /* Ancho aproximado basado en la imagen */
+            clip-path: polygon(0 0, 100% 0, 75% 100%, 0% 100%); /* Crea el corte diagonal */
+        }
+
+        .seccion-bienvenida h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .seccion-bienvenida p {
+            font-size: 1.1em;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .btn-registrarse { /* Mantengo este estilo por si quieres añadir un botón de registro de profesores en el futuro, aunque no se usa en este formulario específico */
+            background-color: #fff;
+            color: #38b461;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-registrarse:hover {
+            background-color: #e6e6e6;
+        }
+
+        .seccion-login {
+            padding: 60px 50px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 60%; /* Ancho aproximado basado en la imagen */
+        }
+
+        .seccion-login h2 {
+            font-size: 2em;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .grupo-formulario {
+            margin-bottom: 25px;
+            position: relative; /* Necesario para posicionar el icono del ojo */
+        }
+
+        .grupo-formulario label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .grupo-formulario input {
+            width: calc(100% - 24px); /* Contabiliza el padding */
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            color: #333;
+            padding-right: 40px; /* Espacio para el icono del ojo */
+        }
+
+        .grupo-formulario input.error {
+            border-color: #e74c3c; /* Borde rojo para estado de error */
+        }
+
+        .grupo-formulario input:focus {
+            outline: none;
+            border-color: #38b461;
+        }
+
+        .requerido {
+            color: #e74c3c; /* Asterisco rojo */
+        }
+
+        /* Estilos para el icono del ojo (SVG) */
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-top: 10px; /* Ajuste manual para la posición debajo del label */
+            cursor: pointer;
+            color: #888;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-password svg {
+            fill: currentColor;
+            transition: fill 0.3s ease;
+        }
+
+        .toggle-password:hover svg {
+            fill: #555;
+        }
+
+        .btn-iniciar-sesion {
+            background-color: #fff;
+            color: #38b461;
+            border: 1px solid #38b461;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-iniciar-sesion:hover {
+            background-color: #38b461;
+            color: #fff;
+        }
+
+        .link-alternativo {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .link-alternativo:hover {
+            text-decoration: underline;
+        }
+
+        /* Ajustes responsivos */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                width: 95%;
+            }
+
+            .seccion-bienvenida {
+                width: 100%;
+                clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%); /* Ajustar para pantallas más pequeñas */
+                padding: 40px 30px;
+                align-items: center;
+                text-align: center;
+            }
+
+            .seccion-login {
+                width: 100%;
+                padding: 40px 30px;
+            }
+
+            .toggle-password {
+                right: 22px; /* Ajuste para el padding en móviles */
+                margin-top: 0; /* Desactiva el ajuste manual en móviles si no es necesario */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .seccion-bienvenida h1 {
+                font-size: 2em;
+            }
+
+            .seccion-bienvenida p {
+                font-size: 1em;
+            }
+
+            .seccion-login h2 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="seccion-bienvenida">
+            <h1>¡Hola, profesor!</h1>
+            <p>Tu plataforma favorita para darle seguimiento a tus estudiantes en sus notas. <br> Fácil, practico, eficaz.</p>
+            </div>
+        <div class="seccion-login">
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form">
+                <div class="grupo-formulario">
+                    <label for="codigo">Código de profesor <span class="requerido">*</span></label>
+                    <input type="text" id="codigo" value="" required>
+                </div>
+                <div class="grupo-formulario">
+                    <label for="contrasena">Contraseña <span class="requerido">*</span></label>
+                    <input type="password" id="contrasena" value="" required>
+                    <span class="toggle-password" id="toggleContrasena">
+                        <svg class="icon-eye-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zM12 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                        <svg class="icon-eye-closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" style="display: none;">
+                            <path d="M12 6c3.79 0 6.79 2.17 8 5.5.08.22.12.45.12.68 0 .42-.08.83-.24 1.22l2.12 2.12c1.53-2.1 2.37-4.66 2.12-7.54C22.73 7.61 18.46 4.5 12 4.5c-2.75 0-5.32 1.05-7.38 2.87L7.6 10.3c.65-1.12 1.66-2.02 2.88-2.67C10.74 7.21 11.36 7 12 7c2.76 0 5 2.24 5 5 0 .64-.21 1.26-.57 1.83L2.81 2.81 1.39 4.22l2.94 2.94C1.94 8.78.69 10.27 0 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.31 4.41-.85L17.58 20.61l1.41-1.41-3.6-3.6c1.67-.52 3.16-1.57 4.36-2.92C22.73 16.39 24 12 24 12c-.25-2.88-1.09-5.44-2.62-7.54L19.78 2.81 18.37 4.22zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                        </svg>
+                    </span>
+                </div>
+                <a href="login-estudiantes.html">¿Eres estudiante?</a>
+                <button type="submit" class="btn-iniciar-sesion">Iniciar Sesión</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Configuración Supabase (tomada de login-profesores.html)
+            const supabaseUrl = "https://aamvnpvfzmnrrfurovuv.supabase.co";
+            const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E";
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+            const loginForm = document.querySelector("#login-form");
+            const inputCodigo = document.getElementById('codigo');
+            const inputContrasena = document.getElementById('contrasena');
+            const toggleContrasena = document.getElementById('toggleContrasena');
+            const iconEyeOpen = toggleContrasena.querySelector('.icon-eye-open');
+            const iconEyeClosed = toggleContrasena.querySelector('.icon-eye-closed');
+
+
+            // Lógica para mostrar/ocultar contraseña (tomada de login-estudiantes.html)
+            toggleContrasena.addEventListener('click', function () {
+                const type = inputContrasena.getAttribute('type') === 'password' ? 'text' : 'password';
+                inputContrasena.setAttribute('type', type);
+
+                if (type === 'password') {
+                    iconEyeOpen.style.display = 'block';
+                    iconEyeClosed.style.display = 'none';
+                } else {
+                    iconEyeOpen.style.display = 'none';
+                    iconEyeClosed.style.display = 'block';
+                }
+            });
+
+            // Quitar la clase 'error' al escribir
+            inputContrasena.addEventListener('input', () => {
+                if (inputContrasena.classList.contains('error')) {
+                    inputContrasena.classList.remove('error');
+                }
+            });
+            inputCodigo.addEventListener('input', () => {
+                if (inputCodigo.classList.contains('error')) {
+                    inputCodigo.classList.remove('error');
+                }
+            });
+
+
+            if (loginForm) {
+                loginForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    const codigo = inputCodigo.value.trim();
+                    const password = inputContrasena.value;
+
+                    if (!codigo || !password) {
+                        alert("Por favor ingresa código y contraseña.");
+                        if (!codigo) inputCodigo.classList.add('error');
+                        if (!password) inputContrasena.classList.add('error');
+                        return;
+                    }
+
+                    console.log("Intentando iniciar sesión profesor con:", { codigo, password });
+
+                    try {
+                        // Consultar en la tabla 'profesores' en Supabase
+                        const { data, error } = await supabase
+                            .from("profesores")
+                            .select("*")
+                            .eq("codigo_profesor", codigo)
+                            .limit(1)
+                            .single();
+
+                        if (error && error.code !== 'PGRST116') { // PGRST116 es "no rows found"
+                            console.error("Error al consultar la base de datos:", error);
+                            alert("Error al iniciar sesión. Inténtalo más tarde.");
+                            inputCodigo.classList.add('error');
+                            inputContrasena.classList.add('error');
+                            return;
+                        }
+
+                        if (!data) {
+                            alert("Código o contraseña incorrectos.");
+                            inputCodigo.classList.add('error');
+                            inputContrasena.classList.add('error');
+                            return;
+                        }
+
+                        // Suponemos que la contraseña está guardada en texto plano (mejor usar hash en producción)
+                        if (data.contrasena === password) {
+                            alert(`Bienvenido ${data.nombre}`);
+
+                            localStorage.setItem("currentUser", JSON.stringify(data));
+                            localStorage.setItem("userRole", "profesor");
+                            localStorage.setItem("userName", data.nombre);
+
+                            window.location.href = "profesores.html"; // Redirige a profesor.html (o el dashboard del profesor)
+                        } else {
+                            alert("Código o contraseña incorrectos.");
+                            inputContrasena.classList.add('error'); // Solo la contraseña está mal
+                        }
+                    } catch (err) {
+                        console.error("Error al iniciar sesión profesor:", err);
+                        alert("Ocurrió un error al iniciar sesión.");
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

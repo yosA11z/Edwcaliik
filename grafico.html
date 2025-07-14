@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gráfico de Notas</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('Sprite-0002.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2em;
+      color: #fff;
+    }
+
+    canvas {
+      background: #fff;
+      border-radius: 16px;
+      padding: 10px;
+      max-width: 90vw;
+      max-height: 400px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    #volver {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #volver:hover {
+      background: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gráfico de Notas por Materia</h1>
+  <canvas id="graficoNotas" width="600" height="400"></canvas>
+  <button id="volver" onclick="window.location.href='estudiantes.html'">Volver</button>
+
+  <script>
+    const supabaseUrl = "https://aamvnpvfzmnrrfurovuv.supabase.co";
+    const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (!currentUser || !currentUser.id) {
+        alert("Debes iniciar sesión.");
+        window.location.href = "login-estudiantes.html";
+        return;
+      }
+
+      const conversionNotas = {
+        "DBJ": 1,
+        "DB": 3,
+        "DA": 4,
+        "DS": 5
+      };
+
+      try {
+        const { data: notasData, error } = await supabase
+          .from("notas")
+          .select("nota, materias(nombre)")
+          .eq("estudiante_id", currentUser.id);
+
+        if (error) throw error;
+
+        const labels = [];
+        const valores = [];
+
+        notasData.forEach(n => {
+          const nombreMateria = n.materias?.nombre || "Materia";
+          const valor = conversionNotas[n.nota] || 0;
+          labels.push(nombreMateria);
+          valores.push(valor);
+        });
+
+        const ctx = document.getElementById('graficoNotas').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Nivel de Desempeño',
+              data: valores,
+              backgroundColor: valores.map(val => {
+                if (val <= 1) return '#c62828';
+                if (val <= 3) return '#f0ad4e';
+                if (val <= 4) return '#71de5b';
+                return '#2e7d32';
+              }),
+              borderRadius: 10,
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1,
+                  callback: function (value) {
+                    switch (value) {
+                      case 1: return 'DBJ';
+                      case 3: return 'DB';
+                      case 4: return 'DA';
+                      case 5: return 'DS';
+                      default: return '';
+                    }
+                  }
+                }
+              }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+
+      } catch (err) {
+        console.error("Error al cargar datos del gráfico:", err);
+        alert("Hubo un problema al cargar el gráfico.");
+      }
+    });
+  </script>
+</body>
+</html>

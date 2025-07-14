@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestiona tus calificaciones</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-color: #f7f7f7;
+            color: #333;
+            /* Añadir padding-top para que el contenido no quede detrás del header fijo */
+            padding-top: 70px; /* Ajusta este valor si el header tiene una altura diferente */
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px; /* Ajustado para que el padding solo sea lateral */
+        }
+
+        header {
+            background-color: #fff;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            /* --- Propiedades para hacer el header fijo --- */
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000; /* Asegura que esté por encima de otros elementos */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Opcional: añade una sombra para destacarlo */
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px; /* Asegura que el contenido del header no se extienda más allá del container */
+            margin: 0 auto; /* Centra el contenido del header */
+            padding: 0 20px; /* Asegura que el contenido del header también tenga padding lateral */
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #555;
+            font-size: 1.2em; /* Added for visual distinction */
+        }
+
+        #welcome-user {
+            font-weight: bold;
+            color: #555;
+            margin-right: 20px; /* Space between welcome message and nav */
+        }
+        
+        header nav a {
+            text-decoration: none;
+            color: #555;
+            margin-left: 20px;
+        }
+
+        .search-bar {
+            background-color: #fff;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            /* Si quieres que la barra de búsqueda también sea fija, necesitaría su propio 'position: fixed' y un 'z-index' ligeramente menor que el header, y el 'body' necesitaría más 'padding-top'. Por ahora, solo el header es fijo. */
+        }
+
+        .search-input {
+            display: flex;
+            align-items: center;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            padding: 8px 15px;
+        }
+
+        .search-input img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            opacity: 0.6; /* Para la lupa */
+        }
+
+        .search-input input {
+            border: none;
+            background: none;
+            padding: 8px 0;
+            font-size: 16px;
+            width: 100%;
+            outline: none;
+            color: #333;
+        }
+
+        .main-content {
+            padding: 30px 0;
+        }
+
+        .main-content h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-align: center;
+        }
+
+        .plan-card {
+            background-color: #2E7D32; /* Verde oscuro, similar al de la imagen original */
+            color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .plan-text h2 {
+            margin-top: 0;
+            font-size: 1.6em;
+            margin-bottom: 5px;
+        }
+
+        .plan-text p {
+            font-size: 1.1em;
+            line-height: 1.4;
+            margin-bottom: 0;
+        }
+
+        .plan-button {
+            background-color: #fff;
+            color: #2E7D32;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .plan-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .subject-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .subject-card img {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 10px;
+        }
+
+        .subject-card p {
+            margin-bottom: 0;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+
+        .footer-content {
+            padding: 0 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 100px; /* Aumenta el padding-top para pantallas pequeñas si el header se hace más alto */
+            }
+            .container {
+                padding: 0 15px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 0 15px;
+            }
+            
+            #welcome-user {
+                margin-right: 0;
+                margin-bottom: 10px; /* Space above nav on small screens */
+            }
+
+            header nav {
+                margin-top: 10px;
+            }
+
+            header nav a {
+                margin-left: 0;
+                margin-right: 15px;
+            }
+
+            .main-content h1 {
+                font-size: 2em;
+                margin-bottom: 20px;
+            }
+
+            .plan-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .plan-button {
+                margin-top: 20px;
+            }
+
+            .subjects-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 10px;
+            }
+
+            .subject-card {
+                padding: 15px 10px;
+            }
+
+            .subject-card img {
+                width: 35px;
+                height: 35px;
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <span class="logo">Edwcaliik</span>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span id="welcome-user"></span>
+                <nav>
+                    <a href="#" id="logout-btn">Cerrar Sesión</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="search-bar">
+        <div class="container">
+            <div class="search-input">
+                <img src="iconos/lupa.png" alt="Buscar"> 
+                <input type="text" id="searchInput" placeholder="Buscar...">
+            </div>
+        </div>
+    </section>
+
+    <section class="main-content">
+        <div class="container">
+            <h1>Gestiona tus calificaciones</h1>
+
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;">
+    <a href="notas-archivos.html">
+        <button class="plan-button">Ver notas (archivos excel, xlsx, etc)</button>
+    </a>
+    <a href="planes-de-estudio.html">
+        <button class="plan-button">Ver planes de estudio</button>
+    </a>
+    <a href="grafico.html">
+        <button class="plan-button">Ver gráfico</button>
+    </a>
+</div>
+
+
+            <div class="plan-card">
+                <div class="plan-text">
+                    <h2>Tu plan</h2>
+                    <p>Verifica los planes de mejora <br> subidos por los profesores</p>
+                </div>
+                <button class="plan-button">Ver</button>
+            </div>
+
+            <div class="subjects-grid" id="subjects-grid">
+                <div class="subject-card" data-subject-id="fisica">
+                    <img src="" alt="Física">
+                    <p>Física</p>
+                </div>
+                <div class="subject-card" data-subject-id="quimica">
+                    <img src="" alt="Química">
+                    <p>Química</p>
+                </div>
+                <div class="subject-card" data-subject-id="sociales"> <img src="" alt="Ciencias Sociales">
+                    <p>Ciencias Sociales</p>
+                </div>
+                <div class="subject-card" data-subject-id="economia"> <img src="" alt="Economía y Política">
+                    <p>Economía y Política</p>
+                </div>
+                <div class="subject-card" data-subject-id="artistica">
+                    <img src="" alt="Artística">
+                    <p>Artística</p>
+                </div>
+                <div class="subject-card" data-subject-id="etica"> <img src="" alt="Ética y Religión">
+                    <p>Ética y Religión</p>
+                </div>
+                <div class="subject-card" data-subject-id="educacion-fisica"> <img src="" alt="Educación Física">
+                    <p>Educación Física</p>
+                </div>
+                <div class="subject-card" data-subject-id="espanol"> <img src="" alt="Lenguaje">
+                    <p>Lenguaje</p>
+                </div>
+                <div class="subject-card" data-subject-id="ingles">
+                    <img src="" alt="Inglés">
+                    <p>Inglés</p>
+                </div>
+                <div class="subject-card" data-subject-id="matematicas">
+                    <img src="" alt="Matemáticas">
+                    <p>Matemáticas</p>
+                </div>
+                <div class="subject-card" data-subject-id="gestion-empresarial"> <img src="" alt="Gestión Empresarial">
+                    <p>Gestión Empresarial</p>
+                </div>
+                <div class="subject-card" data-subject-id="tecnologia">
+                    <img src="" alt="Tecnología">
+                    <p>Tecnología</p>
+                </div>
+                <div class="subject-card" data-subject-id="filosofia">
+                    <img src="" alt="Filosofía">
+                    <p>Filosofía</p>
+                </div>
+                <div class="subject-card" data-subject-id="taller">
+                    <img src="" alt="Taller">
+                    <p>Taller</p>
+                </div>
+                <div class="subject-card" data-subject-id="convivencia">
+                    <img src="" alt="Convivencia">
+                    <p>Convivencia</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; 2025 Edwcaliik. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Inicialización de Supabase
+        const supabaseUrl = "https://aamvnpvfzmnrrfurovuv.supabase.co";
+        const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E";
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const welcomeUserSpan = document.getElementById("welcome-user");
+            const subjectsGrid = document.getElementById("subjects-grid");
+            const logoutBtn = document.getElementById("logout-btn");
+            const searchInput = document.getElementById("searchInput"); // Obtener el campo de búsqueda
+            const allSubjectCards = subjectsGrid.querySelectorAll(".subject-card"); // Obtener todas las tarjetas de materia
+
+            // Mapeo de data-subject-id (para iconos) a nombres de materias en Supabase (para buscar notas)
+            const subjectIdToSupabaseNameMap = {
+                "fisica": "Física",
+                "quimica": "Química",
+                "sociales": "Ciencias Sociales", // HTML data-subject-id "sociales" para icono "sociales", se busca en BD como "Ciencias Sociales"
+                "economia": "Economía y Política",
+                "artistica": "Artística",
+                "etica": "Ética y Religión",
+                "educacion-fisica": "Educación Física",
+                "espanol": "Lenguaje", // HTML data-subject-id "espanol" para icono "espanol", se busca en BD como "Lenguaje"
+                "ingles": "Inglés",
+                "matematicas": "Matemáticas",
+                "gestion-empresarial": "Gestión Empresarial",
+                "tecnologia": "Tecnología",
+                "filosofia": "Filosofía",
+                "taller": "Taller",
+                "convivencia": "Convivencia"
+            };
+
+            // 1. Verificar si el usuario está logueado
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (!currentUser || !currentUser.id || !currentUser.nombre) {
+                // Si no hay usuario logueado o datos incompletos, redirigir al login
+                window.location.href = "login-estudiantes.html";
+                return;
+            }
+
+            // Mostrar el nombre del usuario
+            welcomeUserSpan.textContent = `Bienvenido, ${currentUser.nombre}`;
+            
+            // LOG DEPURACIÓN: Mostrar el ID del estudiante que se está usando
+            console.log("ID del estudiante actual (currentUser.id):", currentUser.id);
+
+            try {
+                // 2. Cargar las notas del estudiante (AJUSTADO PARA TABLA MATERIAS CON 'nombre')
+                const { data: notasData, error: notasError } = await supabase
+                    .from("notas")
+                    .select("nota, materias(nombre)") // Usamos solo 'nombre' de materias
+                    .eq("estudiante_id", currentUser.id);
+
+                if (notasError) {
+                    console.error("Error al cargar las notas:", notasError);
+                    alert(`No se pudieron cargar las notas. Error: ${notasError.message || 'Desconocido'}. Por favor, verifica la columna 'nombre' en tu tabla 'materias' y las relaciones.`);
+                    return; // Detener la ejecución si hay un error crítico
+                }
+
+                // LOG DEPURACIÓN: Mostrar los datos de notas cargados
+                console.log("Notas cargadas (con unión a nombre):", notasData);
+
+                allSubjectCards.forEach(card => {
+                    const subjectSlug = card.dataset.subjectId; // "espanol", "matematicas", etc. (para el nombre del icono)
+                    const imgElement = card.querySelector("img");
+                    const pElement = card.querySelector("p"); // El elemento <p> con el nombre de la materia visible
+
+                    // Obtener el nombre de la materia en Supabase para buscar la nota
+                    const supabaseMateriaName = subjectIdToSupabaseNameMap[subjectSlug];
+
+                    if (!supabaseMateriaName) {
+                        console.warn(`Advertencia: No se encontró un mapeo para el data-subject-id '${subjectSlug}'. La tarjeta no se actualizará.`);
+                        imgElement.src = `iconos/icono-${subjectSlug}-gris.png`; // Asegurarse de que al menos el icono gris por defecto se intente cargar
+                        return; // Saltar esta tarjeta si no hay mapeo válido
+                    }
+
+                    // Buscar la nota correspondiente a la materia usando el nombre de Supabase
+                    const notaMateria = notasData.find(
+                        (nota) => nota.materias && nota.materias.nombre.trim().toLowerCase() === supabaseMateriaName.trim().toLowerCase()
+                    );
+
+                    let notaCualitativa = "N/A";
+                    let iconSrc = `iconos/icono-${subjectSlug}-gris.png`; // Icono gris por defecto
+
+                    if (notaMateria) {
+                        notaCualitativa = notaMateria.nota;
+                        // No necesitamos actualizar pElement.textContent aquí, ya que el HTML ya lo tiene bien para mostrar.
+
+                        // Lógica para seleccionar el icono según la calificación (ACTUALIZADA con DBJ, DB, DA, DS)
+                        if (notaCualitativa === "DS") { // Superior
+                            iconSrc = `iconos/icono-${subjectSlug}-verde.png`;
+                        } else if (notaCualitativa === "DA") { // Alto
+                            iconSrc = `iconos/icono-${subjectSlug}-verde.png`;
+                        } else if (notaCualitativa === "DB") { // Básico
+                            iconSrc = `iconos/icono-${subjectSlug}-naranja.png`;
+                        } else if (notaCualitativa === "DBJ") { // Bajo/Insuficiente
+                            iconSrc = `iconos/icono-${subjectSlug}-rojo.png`;
+                        }
+                    } else {
+                        // Advertencia si no se encuentra una nota para la materia mapeada
+                        console.warn(`No se encontró calificación para la materia: '${supabaseMateriaName}'. Se usará un icono gris por defecto.`);
+                        // El icono gris ya está por defecto
+                    }
+                    imgElement.src = iconSrc; // Asigna la ruta del icono
+
+                    // Evento de clic para cada tarjeta
+                    card.addEventListener('click', () => {
+                        const materiaNombre = pElement.textContent; // Usar el texto visible de la tarjeta
+                        alert(`Materia: ${materiaNombre}\nNota: ${notaCualitativa}`);
+                    });
+                });
+
+            } catch (err) {
+                console.error("Error al cargar datos del estudiante o notas (catch principal):", err);
+                alert("Hubo un error al cargar tus calificaciones. Por favor, inténtalo de nuevo.");
+            }
+
+            // --- Lógica de la barra de búsqueda ---
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase().trim(); // Obtener el texto de búsqueda y limpiar espacios
+
+                allSubjectCards.forEach(card => {
+                    const subjectName = card.querySelector('p').textContent.toLowerCase(); // Obtener el nombre de la materia en la tarjeta
+
+                    if (subjectName.includes(searchTerm)) {
+                        card.style.display = 'block'; // Mostrar la tarjeta si coincide
+                    } else {
+                        card.style.display = 'none'; // Ocultar la tarjeta si no coincide
+                    }
+                });
+            });
+
+
+            // Lógica de Cerrar Sesión
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem("currentUser");
+                    window.location.href = "login-estudiantes.html";
+                });
+            }
+        });
+    </script>
+</body>
+</html>

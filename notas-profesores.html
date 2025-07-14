@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Notas - Profesor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos generales del cuerpo y contenedor - Copiado de profesores.html para consistencia */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: #f7f7f7;
+            color: #333;
+            padding-top: 70px; /* Ajusta este valor si el header tiene una altura diferente */
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Estilos del header - Copiado de profesores.html */
+        header {
+            background-color: #fff;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .nav-links a {
+            color: #555;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #007bff; /* Color de realce al pasar el ratón */
+        }
+
+        .welcome-message {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .logout-btn {
+            background-color: #dc3545; /* Rojo */
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Estilos específicos del formulario de notas - Adaptado de editarNotas.html y profesores.html */
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            margin-bottom: 30px; /* Espacio debajo del formulario */
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .form-group select,
+        .form-group input[type="number"] { /* Asumiendo que nota podría ser un número */
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input[type="number"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        .btn-submit {
+            background-color: #28a745; /* Verde para agregar/actualizar */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            color: #28a745; /* Verde */
+        }
+
+        .message.error {
+            color: #dc3545; /* Rojo */
+        }
+
+        /* Estilos del footer - Copiado de profesores.html */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: #777;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Panel del Profesor</h1>
+            <div class="nav-links">
+                <span class="welcome-message" id="welcomeMessage"></span>
+                <a href="profesores.html">Inicio</a>
+                <button id="logoutBtn" class="logout-btn">Cerrar Sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="form-container">
+            <h2>Registrar/Modificar Nota</h2>
+
+            <div class="form-group">
+                <label for="estudiante">Estudiante:</label>
+                <select id="estudiante" required>
+                    <option value="" disabled selected>Seleccione un estudiante</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="materia">Materia:</label>
+                <select id="materia" required>
+                    <option value="" disabled selected>Seleccione una materia</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nuevaNota">Nueva Nota:</label>
+                <select id="nuevaNota" required>
+                    <option value="" disabled selected>Seleccione una nota</option>
+                    <option value="DBJ">DBJ</option>
+                    <option value="DB">DB</option>
+                    <option value="DA">DA</option>
+                    <option value="DS">DS</option>
+                </select>
+            </div>
+
+            <button id="btnActualizar" class="btn-submit" type="button">Actualizar Nota</button>
+            <p id="mensaje" class="message"></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Edwcaliik. Todos los derechos reservados.</p>
+    </footer>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Configuración de Supabase (reemplaza con tus claves si son diferentes)
+        const supabaseUrl = 'https://aamvnpvfzmnrrfurovuv.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Elementos del DOM
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const selectEstudiante = document.getElementById('estudiante');
+        const selectMateria = document.getElementById('materia');
+        const inputNuevaNota = document.getElementById('nuevaNota');
+        const btnActualizar = document.getElementById('btnActualizar');
+        const mensaje = document.getElementById('mensaje');
+
+        let currentProfessorData = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log("DOMContentLoaded cargado en notas-profesor.html.");
+
+            // ** 1. Verificación de sesión del profesor (usando las mismas claves que profesores.html) **
+            const currentUserJSON = localStorage.getItem("currentUser");
+            const userRole = localStorage.getItem("userRole");
+
+            console.log("Valor de currentUser en localStorage:", currentUserJSON);
+            console.log("Rol de usuario en localStorage:", userRole);
+
+            if (!currentUserJSON || userRole !== "profesor" || currentUserJSON.trim() === "") {
+                alert('No hay sesión de profesor activa. Por favor, inicia sesión.');
+                window.location.href = 'login-profesores.html';
+                return;
+            }
+
+            try {
+                currentProfessorData = JSON.parse(currentUserJSON);
+                console.log("Datos del profesor parseados:", currentProfessorData);
+
+                if (!currentProfessorData || !currentProfessorData.id || !currentProfessorData.nombre) {
+                     alert('Los datos del profesor no son válidos. Por favor, inicia sesión de nuevo.');
+                     localStorage.removeItem('currentUser'); // Limpiar datos inválidos
+                     localStorage.removeItem('userRole');
+                     window.location.href = 'login-profesores.html';
+                     return;
+                }
+                welcomeMessage.textContent = `Bienvenido, ${currentProfessorData.nombre}!`;
+
+            } catch (jsonError) {
+                console.error("Error al parsear JSON del profesor:", jsonError);
+                alert('Error en los datos de la sesión. Por favor, inicia sesión de nuevo.');
+                localStorage.removeItem('currentUser'); // Limpiar datos corruptos
+                localStorage.removeItem('userRole');
+                window.location.href = 'login-profesores.html';
+                return;
+            }
+
+
+            // ** 2. Cargar estudiantes **
+            try {
+                const { data: estudiantes, error: errEst } = await supabase
+                    .from('estudiantes')
+                    .select('id, nombre');
+                if (errEst) throw errEst;
+
+                estudiantes.forEach(est => {
+                    const option = document.createElement('option');
+                    option.value = est.id;
+                    option.textContent = est.nombre;
+                    selectEstudiante.appendChild(option);
+                });
+                console.log("Estudiantes cargados:", estudiantes.length);
+            } catch (error) {
+                console.error('Error al cargar estudiantes:', error.message);
+                mensaje.textContent = 'Error al cargar estudiantes.';
+                mensaje.classList.add('error');
+            }
+
+            // ** 3. Cargar materias **
+            try {
+                const { data: materias, error: errMat } = await supabase
+                    .from('materias')
+                    .select('id, nombre');
+                if (errMat) throw errMat;
+
+                materias.forEach(mat => {
+                    const option = document.createElement('option');
+                    option.value = mat.id;
+                    option.textContent = mat.nombre;
+                    selectMateria.appendChild(option);
+                });
+                console.log("Materias cargadas:", materias.length);
+            } catch (error) {
+                console.error('Error al cargar materias:', error.message);
+                mensaje.textContent = 'Error al cargar materias.';
+                mensaje.classList.add('error');
+            }
+
+            // ** 4. Manejar actualización de nota **
+            btnActualizar.addEventListener('click', async () => {
+                const estudianteId = selectEstudiante.value;
+                const materiaId = selectMateria.value;
+                const nuevaNota = inputNuevaNota.value;
+
+                const notasValidas = ['DBJ', 'DB', 'DA', 'DS']; // Definimos las notas válidas
+
+                // Validación básica
+                if (!estudianteId || !materiaId || !nuevaNota) {
+                    mensaje.textContent = 'Por favor, complete todos los campos.';
+                    mensaje.classList.remove('success');
+                    mensaje.classList.add('error');
+                    return;
+                }
+
+                // Validación para las notas categóricas
+                if (!notasValidas.includes(nuevaNota)) {
+                    mensaje.textContent = 'La nota debe ser DBJ, DB, DA o DS.';
+                    mensaje.classList.remove('success');
+                    mensaje.classList.add('error');
+                    return;
+                }
+
+                try {
+                    // Buscar si ya existe nota para ese estudiante y materia
+                    const { data: notaExistente, error: errBuscar } = await supabase
+                        .from('notas')
+                        .select('id')
+                        .eq('estudiante_id', estudianteId)
+                        .eq('materia_id', materiaId)
+                        .single();
+
+                    if (errBuscar && errBuscar.code !== 'PGRST116') { // PGRST116 = no encontrado, es válido
+                        throw errBuscar;
+                    }
+
+                    if (notaExistente) {
+                        // Actualizar nota existente
+                        const { error: errActualizar } = await supabase
+                            .from('notas')
+                            .update({ nota: nuevaNota })
+                            .eq('id', notaExistente.id);
+                        if (errActualizar) throw errActualizar;
+
+                        mensaje.textContent = 'Nota actualizada correctamente.';
+                    } else {
+                        // Insertar nueva nota
+                        const { error: errInsertar } = await supabase
+                            .from('notas')
+                            .insert([
+                                {
+                                    estudiante_id: estudianteId,
+                                    materia_id: materiaId,
+                                    nota: nuevaNota
+                                }
+                            ]);
+                        if (errInsertar) throw errInsertar;
+
+                        mensaje.textContent = 'Nota agregada correctamente.';
+                    }
+
+                    mensaje.classList.remove('error');
+                    mensaje.classList.add('success');
+                    setTimeout(() => (mensaje.textContent = ''), 4000); // Limpiar mensaje después de 4 segundos
+
+                } catch (error) {
+                    console.error('Error al actualizar nota:', error.message);
+                    mensaje.textContent = 'Error al actualizar nota: ' + error.message;
+                    mensaje.classList.remove('success');
+                    mensaje.classList.add('error');
+                }
+            });
+
+            // ** 5. Manejar cierre de sesión **
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem("currentUser");
+                localStorage.removeItem("userRole");
+                localStorage.removeItem("userName");
+                window.location.href = 'login-profesores.html';
+            });
+        });
+    </script>
+</body>
+</html>
