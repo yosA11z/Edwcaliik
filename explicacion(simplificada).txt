@@ -1,0 +1,45 @@
+El proyecto "Edwcaliik" es una plataforma web educativa diseñada para gestionar información académica tanto para estudiantes como para profesores.
+
+A continuación, se explica su funcionamiento de la manera más sencilla y completa posible:
+
+### **1. Estructura General del Proyecto**
+
+El proyecto consta de varias páginas HTML, cada una con una función específica, que trabajan en conjunto para ofrecer una experiencia completa:
+
+* **Página de Bienvenida (`index.html`)**: Es la página principal donde los usuarios aterrizan. Destaca las funcionalidades clave de la plataforma, como la visualización de calificaciones, el acceso a planes de estudio y la facilidad de uso. Incluye un botón y un texto para redirigir al inicio de sesión de estudiantes.
+* **Inicio de Sesión para Estudiantes (`login-estudiantes.html`)**: Permite a los estudiantes iniciar sesión con su código y contraseña. Si el inicio de sesión es exitoso, los redirige a su panel principal (`estudiantes.html`) y guarda sus datos de sesión localmente. También hay una opción para registrarse.
+* **Inicio de Sesión para Profesores (`login-profesores.html`)**: Similar al de estudiantes, esta página es para que los profesores accedan usando su código y contraseña. Al iniciar sesión correctamente, son redirigidos a su panel (`profesores.html`) y sus datos de sesión se almacenan localmente.
+
+### **2. Funcionalidades para Estudiantes**
+
+Una vez que un estudiante inicia sesión, accede a su panel principal (`estudiantes.html`), donde puede:
+
+* **Gestionar Calificaciones**: Visualizar sus notas para cada materia, incluyendo la calificación cualitativa (por ejemplo, "Bajo", "Básico", "Alto", "Superior") y la calificación numérica. Los datos se obtienen de una base de datos.
+* **Búsqueda de Materias**: Utilizar una barra de búsqueda para filtrar y encontrar materias específicas por nombre.
+* **Navegación Rápida**: Acceder directamente a las secciones de "Planes de Estudio" y "Notas por Archivo".
+* **Cerrar Sesión**: Volver a la pantalla de inicio de sesión de estudiantes.
+* **Visualización de Notas en Gráfico (`grafico.html`)**: Esta página, aunque no es el panel principal, está diseñada para mostrar un gráfico de barras de las notas del estudiante, categorizando su rendimiento en niveles como DBJ, DB, DA, DS, basándose en valores numéricos. Utiliza la librería Chart.js para crear estos gráficos y obtiene los datos de Supabase.
+
+### **3. Funcionalidades para Profesores**
+
+El panel del profesor (`profesores.html`) ofrece las siguientes capacidades:
+
+* **Búsqueda de Estudiantes**: Buscar y listar estudiantes, con la opción de filtrar por curso.
+* **Gestión de Notas (`notas-profesores.html`)**: Acceder a una sección específica donde pueden ver, actualizar y añadir notas para estudiantes y materias determinadas. Esta gestión se realiza directamente con la base de datos de Supabase.
+* **Gestión de Cursos**: Capacidad para cargar y gestionar cursos.
+* **Cerrar Sesión**: Volver a la pantalla de inicio de sesión de profesores.
+
+### **4. Acceso a Documentos y Archivos**
+
+La plataforma también facilita el acceso a recursos importantes:
+
+* **Notas por Archivo (`notas-archivos.html`)**: Permite a los usuarios (probablemente estudiantes) ver y descargar archivos relacionados con notas académicas. Estos archivos se almacenan en un depósito de almacenamiento de Supabase.
+* **Planes de Estudio (`planes-de-estudio.html`)**: Facilita el acceso y la descarga de planes de estudio, que también se alojan en un depósito de almacenamiento de Supabase.
+
+### **5. Tecnologías Clave Utilizadas**
+
+* **Supabase**: Es una plataforma de código abierto utilizada para la base de datos (almacenando información de estudiantes, profesores, materias y notas) y para el almacenamiento de archivos (como planes de estudio y documentos de notas).
+* **Chart.js**: Una librería de JavaScript usada para crear los gráficos interactivos de calificaciones.
+* **HTML, CSS (Tailwind CSS en algunas páginas) y JavaScript**: Son los lenguajes fundamentales de la web que estructuran el contenido, le dan estilo y permiten la interactividad y lógica del lado del cliente.
+
+En resumen, Edwcaliik es una plataforma integral que busca simplificar la gestión y el acceso a la información académica, proporcionando herramientas específicas y fáciles de usar tanto para el personal docente como para los estudiantes.

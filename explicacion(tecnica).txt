@@ -1,0 +1,193 @@
+1. index.html - Página de Bienvenida y Entrada
+
+Esta es la puerta de entrada a la aplicación. Su función principal es servir como una landing page que introduce la plataforma "Edwcaliik".
+
+Estructura: Contiene elementos div semánticos para el header, un hero-section con el título y la descripción, y una sección de features que destaca las funcionalidades clave (visualización de calificaciones, planes de estudio, etc.). Se utilizan estilos CSS integrados y, probablemente, principios de diseño responsivo (aunque el archivo no incluye un framework CSS explícito como Tailwind aquí, sí se ve en otras páginas).
+
+Interactividad (JavaScript):
+
+Redirección: Un addEventListener en el DOMContentLoaded asegura que el código JavaScript se ejecute una vez que el DOM está completamente cargado.
+
+El botón .view-button y el elemento .login-text tienen click listeners que redirigen al usuario a login-estudiantes.html mediante window.location.href.
+
+Los elementos .card (que representan las características) también tienen click listeners para propósitos de logging (console.log), aunque no desencadenan ninguna acción de navegación o funcionalidad adicional en esta página.
+
+Propósito Técnico: Esencialmente, es una página estática con un mínimo de JavaScript para la navegación inicial. No interactúa directamente con Supabase ni maneja datos del usuario.
+
+2. login-estudiantes.html - Autenticación de Estudiantes
+
+Esta página gestiona el proceso de inicio de sesión para los estudiantes.
+
+Estructura: Presenta un formulario de login con campos input para codigo_estudiante y contrasena, y botones para "Iniciar Sesión" y "Registrarse". Utiliza un diseño de dos columnas, con una sección de bienvenida estática a la izquierda y el formulario de login a la derecha. Se aplican estilos CSS integrados para el diseño y la responsividad.
+
+Interactividad (JavaScript / Supabase):
+
+SDK de Supabase: Importa y utiliza el SDK de Supabase (@supabase/supabase-js) para interactuar con la base de datos y la autenticación. Se configura una instancia de cliente de Supabase usando createClient(SUPABASE_URL, SUPABASE_ANON_KEY).
+
+Manejo del Formulario: Un addEventListener en el botón de "Iniciar Sesión" ( loginBtn) escucha el evento click.
+
+Validación y Consulta: Al hacer clic, se obtienen los valores de los campos de entrada (inputCodigo.value, inputContrasena.value).
+
+Se realiza una consulta a la tabla estudiantes de Supabase usando supabase.from('estudiantes').select('id, nombre, codigo_estudiante').eq('codigo_estudiante', codigo).eq('contrasena', password).single().
+
+Manejo de Errores: Se utilizan bloques try...catch para gestionar posibles errores de red o de la API de Supabase. Se muestran alertas (alert()) al usuario en caso de credenciales inválidas o errores inesperados. Se añaden clases error a los campos de entrada para retroalimentación visual.
+
+Gestión de Sesión (Cliente): Si el inicio de sesión es exitoso (data no es nulo y no hay error), los datos relevantes del estudiante (id, nombre, codigo_estudiante) se serializan a JSON y se almacenan en localStorage bajo la clave currentUser. Esto permite que otras páginas accedan a la información del usuario logueado.
+
+Redirección: Finalmente, el navegador es redirigido a estudiantes.html.
+
+El botón "Registrarse" tiene un alert() placeholder, indicando que aún no hay una funcionalidad de registro implementada.
+
+3. login-profesores.html - Autenticación de Profesores
+
+Similar al login de estudiantes, pero adaptado para profesores.
+
+Diferencias Técnicas Clave:
+
+La consulta a Supabase se dirige a la tabla profesores (supabase.from('profesores').select('*').eq('codigo', codigo).single()).
+
+Importante (Vulnerabilidad): A diferencia de un sistema de autenticación de hash de contraseñas, este código realiza una comparación de contraseña en texto plano (data.contrasena === password) una vez que el registro del profesor es recuperado de la base de datos. En un entorno de producción, esto es una vulnerabilidad de seguridad mayor y debería reemplazarse por el uso adecuado de supabase.auth o, si se manejan contraseñas directamente en la tabla, asegurar que estén almacenadas como hashes (e.g., bcrypt) y se validen con una librería de comparación de hashes.
+
+Almacena userRole como "profesor" y userName en localStorage además de currentUser.
+
+Redirige a profesores.html.
+
+4. estudiantes.html - Panel de Control del Estudiante
+
+Este es el dashboard principal para los estudiantes logueados.
+
+Estructura: Contiene un encabezado fijo, un área de contenido principal para mostrar las materias y sus calificaciones, y una barra de búsqueda. Utiliza estilos CSS integrados. Las materias se renderizan dinámicamente como "tarjetas" (div con clase subject-card).
+
+Interactividad (JavaScript / Supabase):
+
+Validación de Sesión: Al cargar la página, verifica la existencia de currentUser en localStorage. Si no existe, redirige al login-estudiantes.html, asegurando que solo los usuarios autenticados accedan.
+
+Carga de Datos: La función asíncrona loadStudentData():
+
+Obtiene el id del estudiante actual de localStorage.
+
+Realiza consultas a Supabase para obtener las notas (supabase.from('notas').select('*, materias(nombre)').eq('estudiante_id', studentId)) y, opcionalmente, la información del estudiante (supabase.from('estudiantes').select('*, planes_de_estudio(nombre)').eq('id', studentId).single()).
+
+Las materias se unen implícitamente en la consulta Supabase (materias(nombre)), lo que indica una relación entre las tablas notas y materias.
+
+Renderiza dinámicamente las tarjetas de materias en el subjectsContainerDiv, calculando la calificación cualitativa (DBJ, DB, DA, DS) basada en el valor numérico de la nota.
+
+Funcionalidad de Búsqueda: Un input listener en searchInput filtra las tarjetas de materias (subject-card) en tiempo real. Compara el textContent del nombre de la materia (en minúsculas) con el término de búsqueda, mostrando u ocultando las tarjetas (card.style.display = 'block' / 'none').
+
+Cerrar Sesión: Un click listener en logoutBtn elimina currentUser de localStorage y redirige al login.
+
+5. profesores.html - Panel de Control del Profesor
+
+El dashboard principal para profesores, permitiéndoles gestionar estudiantes.
+
+Estructura: Similar al panel de estudiantes, con un encabezado fijo, un área para la búsqueda y listado de estudiantes, y opciones para filtrar por curso.
+
+Interactividad (JavaScript / Supabase):
+
+Validación de Sesión: Verifica currentUser y userRole en localStorage para asegurar que solo los profesores autenticados accedan.
+
+Carga de Cursos: La función loadCourses() obtiene la lista de cursos desde la tabla cursos de Supabase (supabase.from('cursos').select('*')) y las popula en un select (courseSelect).
+
+Búsqueda y Visualización de Estudiantes: La función searchAndDisplayStudents():
+
+Realiza una consulta a la tabla estudiantes de Supabase.
+
+Aplica filtros si se selecciona un curso (eq('curso_id', selectedCourseId)) o si hay un término de búsqueda por nombre (aunque el input listener para nombre está comentado, la estructura está presente).
+
+Renderiza dinámicamente la lista de estudiantes en studentListDiv.
+
+Cada estudiante listado tiene un click listener que podría redirigir a una página de gestión de notas específica para ese estudiante (actualmente, solo un alert() de placeholder).
+
+Cerrar Sesión: Elimina las entradas de sesión de localStorage y redirige al login de profesores.
+
+6. grafico.html - Visualización de Notas Gráficas
+
+Página dedicada a mostrar un gráfico de barras de las notas del estudiante.
+
+Estructura: Contiene un elemento <canvas> que sirve como contenedor para el gráfico. Se utiliza una imagen de fondo y estilos CSS para centrar y estilizar el contenido.
+
+Interactividad (JavaScript / Supabase / Chart.js):
+
+SDK de Supabase y Chart.js: Importa ambas librerías desde CDN.
+
+Carga de Datos: Obtiene el currentUser del localStorage para identificar al estudiante. Luego, consulta la tabla notas de Supabase para obtener las calificaciones y nombres de materias del estudiante (supabase.from('notas').select('*, materias(nombre)').eq('estudiante_id', studentId)).
+
+Preparación de Datos para Chart.js:
+
+Mapea los datos obtenidos de Supabase a dos arrays: labels (nombres de materias) y valores (notas numéricas).
+
+Define un backgroundColor dinámico para las barras del gráfico, asignando colores específicos (rojo, naranja, verde claro, verde oscuro) según el rango de la nota, lo que permite una visualización rápida del rendimiento.
+
+Renderización del Gráfico: Utiliza new Chart(ctx, { type: 'bar', data: {...}, options: {...} }) para instanciar y dibujar el gráfico.
+
+Configuración del Eje Y: La propiedad ticks.callback en las scales del eje Y se usa para mostrar etiquetas cualitativas ('DBJ', 'DB', 'DA', 'DS') en lugar de los valores numéricos brutos (1, 3, 4, 5), mejorando la legibilidad para el usuario final.
+
+7. notas-profesores.html - Gestión de Notas por Profesor
+
+Esta página permite a los profesores modificar o agregar notas a los estudiantes.
+
+Estructura: Contiene select dropdowns para elegir al estudiante y la materia, un input para la nueva nota, y un botón para "Guardar Nota". Un área de mensaje (mensajeDiv) muestra el feedback de las operaciones.
+
+Interactividad (JavaScript / Supabase):
+
+Validación de Sesión: Similar a otras páginas, verifica el rol de profesor y el usuario actual.
+
+Carga de Datos para Dropdowns: Las funciones loadStudents() y loadMaterias() obtienen dinámicamente las listas de estudiantes y materias de sus respectivas tablas de Supabase y las populan en los elementos <select>.
+
+Lógica de Guardar Nota (saveNoteBtn):
+
+Obtiene los id seleccionados de estudiante y materia, y el valor de la nuevaNota.
+
+Realiza una consulta a la tabla notas de Supabase para buscar una nota existente para la combinación estudiante-materia (supabase.from('notas').select('id, nota').eq('estudiante_id', estudianteId).eq('materia_id', materiaId).single()).
+
+Operación UPSERT (Update/Insert):
+
+Si data (nota existente) se encuentra, ejecuta una operación update() (supabase.from('notas').update({ nota: nuevaNota }).eq('id', notaExistenteId)).
+
+Si data no se encuentra, ejecuta una operación insert() (supabase.from('notas').insert([{ estudiante_id: ..., materia_id: ..., nota: ... }])).
+
+Muestra mensajes de éxito o error en mensajeDiv con clases CSS success o error.
+
+Cerrar Sesión: Funcionalidad estándar para cerrar la sesión del profesor.
+
+8. notas-archivos.html - Visualización de Archivos de Notas
+
+Página para acceder y descargar documentos relacionados con notas.
+
+Estructura: Un diseño simple con un encabezado y un contenedor para listar los archivos. Utiliza Tailwind CSS para el estilado.
+
+Interactividad (JavaScript / Supabase Storage):
+
+Validación de Sesión: Redirige si no hay un estudiante logueado.
+
+Carga de Archivos: La función asíncrona loadNotesFiles():
+
+Interactúa con supabase.storage.
+
+Utiliza supabase.storage.from('documentos-estudiantes').list('notas', {...}) para obtener la lista de archivos dentro del directorio notas del bucket documentos-estudiantes. Se especifican opciones de paginación (limit, offset) y ordenación (sortBy).
+
+Para cada archivo recuperado, genera una URL pública para su descarga con supabase.storage.from('documentos-estudiantes').getPublicUrl(notas/${file.name}).data.publicUrl.
+
+Renderiza dinámicamente enlaces <a> con target="_blank" para abrir los archivos en una nueva pestaña.
+
+Manejo de errores para la carga de archivos.
+
+9. planes-de-estudio.html - Visualización de Planes de Estudio
+
+Similar a notas-archivos.html, pero para planes de estudio.
+
+Estructura: Idéntica en concepto a notas-archivos.html, con un encabezado y un área para listar los planes de estudio. Utiliza Tailwind CSS.
+
+Interactividad (JavaScript / Supabase Storage):
+
+Validación de Sesión: (No explícita en el snippet proporcionado para el inicio, pero se esperaría para coherencia).
+
+Carga de Archivos (Recursiva): La función listAllFilesRecursively() es un intento más avanzado de listar archivos, capaz de recorrer subdirectorios en el bucket de Supabase Storage. Utiliza supabase.storage.from(bucket).list(path, { ... }).
+
+Generación de URLs Públicas: Una vez que se obtienen todos los archivos (incluyendo los de subcarpetas si aplica), se utiliza supabase.storage.from(bucketName).getPublicUrl(file.fullPath) para generar los enlaces de descarga.
+
+Renderiza los enlaces dinámicamente.
+
+Manejo de errores.
+
+En resumen, "Edwcaliik" es una aplicación web impulsada por JavaScript del lado del cliente, que se comunica extensivamente con Supabase para todas sus necesidades de persistencia de datos, autenticación y almacenamiento de archivos, ofreciendo interfaces de usuario diferenciadas para estudiantes y profesores.
