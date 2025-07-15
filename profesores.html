@@ -356,8 +356,29 @@
                     <h3>Planes de Estudio</h3>
                     <p>Gestiona y sube los planes de estudio para tus materias.</p>
                     <input type="file" id="plans-file-input" accept=".pdf, .doc, .docx" style="display: none;">
-                    <button class="btn-action" id="upload-plans-btn">Subir Archivo</button>
-                    <p id="uploadPlansMessage" class="message"></p>
+<button class="btn-action" id="upload-plans-btn">Subir Archivo</button>
+
+<!-- NUEVO: Selector de materias -->
+<select id="materia-select" style="display: none; margin-top: 10px; padding: 10px; border-radius: 8px;">
+  <option value="">Seleccione una materia</option>
+  <option value="fisica">Física</option>
+  <option value="quimica">Química</option>
+  <option value="ciencias-sociales">Ciencias Sociales</option>
+  <option value="economia-y-politica">Economía y Política</option>
+  <option value="artistica">Artística</option>
+  <option value="etica-y-religion">Ética y Religión</option>
+  <option value="educacion-fisica">Educación Física</option>
+  <option value="lenguaje">Lenguaje</option>
+  <option value="ingles">Inglés</option>
+  <option value="matematicas">Matemáticas</option>
+  <option value="gestion-empresarial">Gestión Empresarial</option>
+  <option value="tecnologia">Tecnología</option>
+  <option value="filosofia">Filosofía</option>
+  <option value="taller">Taller</option>
+</select>
+
+<p id="uploadPlansMessage" class="message"></p>
+
                 </div>
             </div>
 
@@ -384,7 +405,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
+    <script type="module">
         // Inicialización de Supabase
         const supabaseUrl = "https://aamvnpvfzmnrrfurovuv.supabase.co";
         const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E";
@@ -498,22 +519,40 @@
 
             // --- Funcionalidad de Subir Planes de Estudio ---
             uploadPlansBtn.addEventListener('click', () => {
-                plansFileInput.click(); // Disparar el clic en el input de tipo file
-            });
+    // Mostrar el selector de materia
+    const materiaSelect = document.getElementById('materia-select');
+    materiaSelect.style.display = 'inline-block';
+
+    // Mostrar un mensaje al usuario
+    uploadPlansMessage.textContent = 'Seleccione una materia antes de subir el archivo.';
+    uploadPlansMessage.classList.remove('success', 'error');
+});
+
+// Cuando el profesor elige una materia, disparamos el input file
+document.getElementById('materia-select').addEventListener('change', () => {
+    const selectedMateria = document.getElementById('materia-select').value;
+    if (selectedMateria) {
+        plansFileInput.click(); // Abrir el diálogo para seleccionar archivo
+    }
+});
+
 
             plansFileInput.addEventListener('change', async (event) => {
     const file = event.target.files[0];
-    if (!file) {
-        uploadPlansMessage.textContent = '';
+    const selectedMateria = document.getElementById('materia-select').value;
+
+    if (!file || !selectedMateria) {
+        uploadPlansMessage.textContent = 'Debe seleccionar una materia válida antes de subir.';
+        uploadPlansMessage.classList.remove('success');
+        uploadPlansMessage.classList.add('error');
         return;
     }
 
     uploadPlansMessage.textContent = 'Subiendo plan de estudio...';
     uploadPlansMessage.classList.remove('success', 'error');
 
-    // Nueva ruta simplificada, sin ID ni carpetas por profesor
     const cleanName = file.name.replace(/\s+/g, '-').replace(/[^\w.-]/g, '');
-    const filePath = `planes/${Date.now()}-${cleanName}`;
+    const filePath = `${selectedMateria}/${Date.now()}-${cleanName}`;
 
     try {
         const { data, error } = await supabase.storage
@@ -528,16 +567,18 @@
         uploadPlansMessage.textContent = '¡Plan de estudio subido correctamente!';
         uploadPlansMessage.classList.remove('error');
         uploadPlansMessage.classList.add('success');
-
     } catch (error) {
-        console.error("Error al subir plan de estudio a Supabase Storage:", error);
-        uploadPlansMessage.textContent = `Error al subir plan de estudio: ${error.message || error.error || 'Desconocido'}`;
+        console.error("Error al subir plan de estudio:", error);
+        uploadPlansMessage.textContent = `Error: ${error.message || 'no se pudo subir.'}`;
         uploadPlansMessage.classList.remove('success');
         uploadPlansMessage.classList.add('error');
     } finally {
-        plansFileInput.value = ''; // Limpiar el input de archivo
+        plansFileInput.value = '';
+        document.getElementById('materia-select').style.display = 'none';
+        document.getElementById('materia-select').value = '';
     }
 });
+
 
 
 

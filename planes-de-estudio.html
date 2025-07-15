@@ -88,20 +88,26 @@
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .section-card h2 {
-      font-size: 1.8em;
+      font-size: 1.3em;
       color: #2E7D32;
-      margin-bottom: 20px;
-      text-align: center;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .section-card h2:hover {
+      color: #1b5e20;
+      text-decoration: underline;
     }
 
     .plan-item {
-      padding: 12px 0;
+      padding: 10px 0;
       border-bottom: 1px dashed #eee;
-      font-size: 1.1em;
+      font-size: 1em;
     }
 
     .plan-item:last-child {
@@ -190,14 +196,12 @@
     <div class="container">
       <h1>📖 Planes de Estudio</h1>
 
-      <div class="section-card">
-        <h2>Todos los Archivos de Planes de Estudio</h2>
-        <div id="plans-list">
-          <p class="text-center text-gray-500">Cargando planes de estudio desde Storage...</p>
-        </div>
-        <div class="flex justify-center mt-6">
-          <a href="estudiantes.html" class="back-button">Volver al Panel</a>
-        </div>
+      <div id="plans-list">
+        <p class="text-center text-gray-500">Cargando materias...</p>
+      </div>
+
+      <div class="flex justify-center mt-6">
+        <a href="estudiantes.html" class="back-button">Volver al Panel</a>
       </div>
     </div>
   </section>
@@ -214,10 +218,106 @@
     const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-    document.addEventListener("DOMContentLoaded", async () => {
+    const materias = [
+      "fisica", "quimica", "ciencias-sociales", "economia-y-politica", "artistica",
+      "etica-y-religion", "educacion-fisica", "lenguaje", "ingles", "matematicas",
+      "gestion-empresarial", "tecnologia", "filosofia", "taller"
+    ];
+
+    function formatearNombreMateria(slug) {
+      return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    async function listAllFilesRecursively(bucket, prefix) {
+      let result = [];
+      const { data, error } = await supabase.storage.from(bucket).list(prefix, {
+        limit: 100,
+        offset: 0,
+        sortBy: { column: "name", order: "asc" },
+      });
+
+      if (error) return [];
+
+      for (const item of data) {
+        const fullPath = `${prefix}${item.name}`;
+        if (item.id && item.name !== ".emptyFolderPlaceholder") {
+          result.push({ ...item, fullPath });
+        } else {
+          const subItems = await listAllFilesRecursively(bucket, `${fullPath}/`);
+          result = result.concat(subItems);
+        }
+      }
+
+      return result;
+    }
+
+    async function cargarPlanesPorMateria(materiaSlug, contenedor) {
+      const bucketName = "planes-de-estudio";
+      const path = `${materiaSlug}/`;
+
+      try {
+        const archivos = await listAllFilesRecursively(bucketName, path);
+
+        if (archivos.length === 0) {
+          contenedor.innerHTML = `<p class="text-sm text-gray-500 mt-2">Tu profesor aún no ha asignado un plan de estudio para esta materia.</p>`;
+          return;
+        }
+
+        let html = "";
+        archivos.forEach(file => {
+          const { data: publicUrlData } = supabase.storage.from(bucketName).getPublicUrl(file.fullPath);
+          html += `
+            <div class="plan-item pl-2">
+              <a href="${publicUrlData.publicUrl}" target="_blank" rel="noopener noreferrer">
+                📄 ${file.name}
+              </a>
+            </div>`;
+        });
+
+        contenedor.innerHTML = html;
+      } catch (err) {
+        contenedor.innerHTML = `<p class="text-sm text-red-500 mt-2">Error al cargar esta materia. Intenta más tarde.</p>`;
+      }
+    }
+
+    function crearVistaCarpetas() {
+      const plansListDiv = document.getElementById("plans-list");
+      plansListDiv.innerHTML = "";
+
+      materias.forEach(materia => {
+        const materiaNombre = formatearNombreMateria(materia);
+        const folderDiv = document.createElement("div");
+        folderDiv.className = "section-card mb-4";
+
+        folderDiv.innerHTML = `
+          <h2 class="text-green-700" data-materia="${materia}">
+            📁 ${materiaNombre}
+          </h2>
+          <div id="contenedor-${materia}" class="contenido-materia hidden mt-2"></div>
+        `;
+
+        plansListDiv.appendChild(folderDiv);
+      });
+
+      materias.forEach(materia => {
+        const titulo = document.querySelector(`h2[data-materia="${materia}"]`);
+        const contenedor = document.getElementById(`contenedor-${materia}`);
+
+        titulo.addEventListener("click", async () => {
+          if (contenedor.classList.contains("hidden")) {
+            contenedor.innerHTML = '<p class="text-sm text-gray-400">Cargando...</p>';
+            contenedor.classList.remove("hidden");
+            await cargarPlanesPorMateria(materia, contenedor);
+          } else {
+            contenedor.classList.toggle("hidden");
+          }
+        });
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
       const welcomeUserSpan = document.getElementById("welcome-user");
       const logoutBtn = document.getElementById("logout-btn");
-      const plansListDiv = document.getElementById("plans-list");
 
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
       if (!currentUser || !currentUser.id || !currentUser.nombre) {
@@ -234,65 +334,7 @@
         window.location.href = "login-estudiantes.html";
       });
 
-      async function listAllFilesRecursively(bucket, prefix) {
-  let result = [];
-
-  const { data, error } = await supabase.storage.from(bucket).list(prefix, {
-    limit: 100,
-    offset: 0,
-    sortBy: { column: "name", order: "asc" },
-  });
-
-  if (error) throw error;
-
-  for (const item of data) {
-    const fullPath = `${prefix}${item.name}`;
-    if (item.id) {
-      // Archivos reales tienen ID; carpetas no.
-      result.push({ ...item, fullPath });
-    } else {
-      // Si es carpeta, recursivamente sigue
-      const subItems = await listAllFilesRecursively(bucket, `${fullPath}/`);
-      result = result.concat(subItems);
-    }
-  }
-
-  return result;
-}
-
-
-      async function loadStudyPlansFromStorage() {
-        try {
-          plansListDiv.innerHTML = '<p class="text-center text-gray-500">Cargando todos los planes de estudio...</p>';
-          const bucketName = "planes-de-estudio";
-          const rootPath = "planes/";
-
-          const allFiles = await listAllFilesRecursively(bucketName, "planes/");
-
-          if (allFiles.length === 0) {
-            plansListDiv.innerHTML = '<p class="text-center text-gray-500">No hay archivos de planes de estudio en el Storage aún.</p>';
-            return;
-          }
-
-          let html = "";
-          allFiles.forEach(file => {
-            const { data: publicUrlData } = supabase.storage.from(bucketName).getPublicUrl(file.fullPath);
-            html += `
-              <div class="plan-item">
-                <a href="${publicUrlData.publicUrl}" target="_blank" rel="noopener noreferrer">
-                  📄 ${file.name}
-                </a>
-              </div>`;
-          });
-
-          plansListDiv.innerHTML = html;
-        } catch (err) {
-          console.error("Error al cargar planes:", err.message);
-          plansListDiv.innerHTML = '<p class="text-center text-red-500">Error al cargar los archivos. Revisa los permisos del bucket o la conexión.</p>';
-        }
-      }
-
-      await loadStudyPlansFromStorage();
+      crearVistaCarpetas();
     });
   </script>
 </body>
