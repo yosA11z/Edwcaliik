@@ -59,7 +59,7 @@
         }
 
         header nav a:hover {
-            color: #2E7D32; /* Color verde de tu paleta */
+            color: #2E7D32;
         }
 
         .main-content {
@@ -643,10 +643,14 @@ document.getElementById('materia-select').addEventListener('change', () => {
                     // Añadir event listeners a los botones "Ver Detalles"
                     studentListDiv.querySelectorAll('.details-btn').forEach(button => {
                         button.addEventListener('click', (e) => {
+                            // OBTENER Y GUARDAR EL ID Y EL NOMBRE DEL ESTUDIANTE EN LOCALSTORAGE
                             const studentId = e.target.dataset.studentId;
                             const studentName = e.target.dataset.studentName;
-                            alert(`Ver detalles y notas de: ${studentName} (ID: ${studentId})\n(Aquí podrías redirigir a una página de perfil de estudiante con sus notas o abrir un modal)`);
-                            // window.location.href = `ver-notas-estudiante.html?id=${studentId}`; // Ejemplo de redirección
+                            localStorage.setItem('selectedStudentId', studentId);
+                            localStorage.setItem('selectedStudentName', studentName);
+
+                            // Redirigir a la página de detalles del estudiante
+                            window.location.href = "detalles-estudiantes.html";
                         });
                     });
 

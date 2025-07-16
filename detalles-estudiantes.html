@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Estudiante - Edwcaliik</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-color: #f7f7f7; /* Fondo general de la página */
+            color: #333;
+            padding-top: 70px; /* Espacio para el encabezado fijo */
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #2E7D32; /* Azul oscuro para el encabezado (como en informacion.html) */
+            color: white; /* Texto blanco en el encabezado */
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: white; /* Logo blanco */
+            font-size: 1.2em;
+        }
+
+        #welcome-teacher {
+            font-weight: bold;
+            color: white; /* Texto de bienvenida blanco */
+            margin-right: 20px;
+        }
+
+        header nav a {
+            text-decoration: none;
+            color: white; /* Enlaces de navegación blancos */
+            margin-left: 20px;
+            transition: color 0.3s ease;
+        }
+
+        header nav a:hover {
+            color: #ccc; /* Un tono más claro al pasar el ratón */
+        }
+
+        .main-content {
+            padding: 30px 0;
+        }
+
+        .main-content h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            text-align: center;
+        }
+
+        .student-info-section, .grades-section {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .student-info-section h2, .grades-section h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Estilo de tabla adaptado de informacion.html */
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px; /* Para centrar la tabla */
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ddd; /* Borde más suave */
+            border-radius: 8px; /* Bordes redondeados */
+            overflow: hidden; /* Asegura que los bordes redondeados se apliquen al contenido */
+        }
+
+        th, td {
+            border: 1px solid #ddd; /* Líneas de la tabla más suaves */
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 1em;
+            color: #444;
+        }
+
+        th {
+            background-color: #2E7D32; /* Color de fondo de encabezado de tabla como en informacion.html */
+            color: white; /* Texto blanco */
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* Rayado para filas impares */
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .subject-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .subject-card img {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 10px;
+        }
+
+        .subject-card p {
+            margin-bottom: 0;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+
+        .footer-content {
+            padding: 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 100px;
+            }
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #welcome-teacher {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            header nav {
+                margin-top: 10px;
+            }
+            header nav a {
+                margin-left: 0;
+                margin-right: 15px;
+            }
+            .main-content h1 {
+                font-size: 2em;
+            }
+            .subjects-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 10px;
+            }
+            .subject-card {
+                padding: 15px 10px;
+            }
+            .subject-card img {
+                width: 35px;
+                height: 35px;
+                margin-bottom: 8px;
+            }
+            table, th, td {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <span class="logo">Edwcaliik</span>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span id="welcome-teacher"></span>
+                <nav>
+                    <a href="#" id="logout-btn">Cerrar Sesión</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="main-content">
+        <div class="container">
+            <h1 id="student-name-display">Cargando Detalles del Estudiante...</h1>
+
+            <div class="student-info-section">
+                <h2>Información General</h2>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <td id="dato-nombre">Cargando...</td>
+                        </tr>
+                        <tr>
+                            <th>Correo Electrónico</th>
+                            <td id="dato-correo">Cargando...</td>
+                        </tr>
+                        <tr>
+                            <th>Curso Actual</th>
+                            <td id="dato-curso">Cargando...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="grades-section">
+                <h2>Calificaciones por Materia</h2>
+                <div class="subjects-grid" id="subjects-grid">
+                    <p style="text-align: center; color: #777;">Cargando notas...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; 2025 Edwcaliik. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+        const supabaseUrl = "https://aamvnpvfzmnrrfurovuv.supabase.co";
+        const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhbXZucHZmem1ucnJmdXJvdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNjI2NDUsImV4cCI6MjA2MzYzODY0NX0._OigReH-zPR9AfGE5L9Rw9H71AnxQzH7T5k93mjPj5E";
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const welcomeTeacherSpan = document.getElementById("welcome-teacher");
+            const studentNameDisplay = document.getElementById("student-name-display");
+            const logoutBtn = document.getElementById("logout-btn");
+            const subjectsGrid = document.getElementById("subjects-grid");
+
+            const datoNombre = document.getElementById("dato-nombre");
+            const datoCorreo = document.getElementById("dato-correo");
+            const datoCurso = document.getElementById("dato-curso");
+
+            // Mapeo de data-subject-id a nombres de materias en Supabase
+            const subjectIdToSupabaseNameMap = {
+                "fisica": "Física",
+                "quimica": "Química",
+                "sociales": "Ciencias Sociales",
+                "economia": "Economía y Política",
+                "artistica": "Artística",
+                "etica": "Ética y Religión",
+                "educacion-fisica": "Educación Física",
+                "espanol": "Lenguaje",
+                "ingles": "Inglés",
+                "matematicas": "Matemáticas",
+                "gestion-empresarial": "Gestión Empresarial",
+                "tecnologia": "Tecnología",
+                "filosofia": "Filosofía",
+                "taller": "Taller",
+                "convivencia": "Convivencia"
+            };
+
+            // 1. Verificar si el usuario actual es un profesor
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            const userRole = localStorage.getItem("userRole");
+
+            if (!currentUser || userRole !== "profesor" || !currentUser.id || !currentUser.nombre) {
+                alert("Acceso denegado. Por favor, inicia sesión como profesor.");
+                window.location.href = "login-profesores.html";
+                return;
+            }
+
+            welcomeTeacherSpan.textContent = `Bienvenido, Prof. ${currentUser.nombre}`;
+
+            // 2. Obtener el ID del estudiante seleccionado de localStorage
+            const selectedStudentId = localStorage.getItem("selectedStudentId");
+            const selectedStudentName = localStorage.getItem("selectedStudentName"); // Opcional, para mostrarlo más rápido
+
+            // **** NUEVO LOG PARA VER EL ID DESDE LOCALSTORAGE ****
+            console.log("ID del estudiante desde localStorage:", selectedStudentId);
+
+
+            if (!selectedStudentId) {
+                alert("No se ha seleccionado ningún estudiante. Por favor, selecciona uno desde el panel de profesores.");
+                window.location.href = "profesores.html";
+                return;
+            }
+
+            studentNameDisplay.textContent = `Detalles de ${selectedStudentName || 'Estudiante Seleccionado'}`;
+
+            // 3. Cargar la información completa del estudiante desde Supabase
+            let estudiante = null; // Declarar 'estudiante' aquí para que sea accesible en todo el ámbito
+            try {
+                const { data, error: estudianteError } = await supabase
+                    .from("estudiantes")
+                    .select("nombre, correo, curso_id:cursos(nombre_curso), id") // Asegúrate de seleccionar el 'id'
+                    .eq("id", selectedStudentId)
+                    .single();
+
+                if (estudianteError) {
+                    console.error("Error al obtener detalles del estudiante:", estudianteError);
+                    throw estudianteError;
+                }
+                
+                estudiante = data; // Asignar el dato al 'estudiante' declarado arriba
+
+                // **** NUEVOS LOGS PARA DEPURACIÓN DEL OBJETO ESTUDIANTE ****
+                console.log("Objeto estudiante completo después de la primera consulta:", estudiante);
+                console.log("ID del estudiante obtenido de la primera consulta (estudiante.id):", estudiante ? estudiante.id : "ID no disponible en el objeto estudiante");
+
+
+                if (!estudiante || !estudiante.id) {
+                    throw new Error("Estudiante no encontrado o ID de estudiante no válido en la base de datos.");
+                }
+
+                datoNombre.textContent = estudiante.nombre || "-";
+                datoCorreo.textContent = estudiante.correo || "-";
+                datoCurso.textContent = estudiante.curso_id?.nombre_curso || "-";
+                studentNameDisplay.textContent = `Detalles de ${estudiante.nombre}`;
+
+            } catch (error) {
+                console.error("Error general al cargar detalles del estudiante:", error);
+                alert(`Error al cargar los detalles del estudiante: ${error.message}.`);
+                // Si el estudiante no se carga, no tiene sentido intentar cargar las notas.
+                subjectsGrid.innerHTML = '<p style="text-align: center; color: #e74c3c;">No se pudo cargar la información del estudiante. Por favor, inténtalo de nuevo.</p>';
+                return; // Detener la ejecución si no se carga el estudiante
+            }
+
+            // 4. Cargar las notas de este estudiante específico (solo si el estudiante se cargó correctamente)
+            try {
+                // El error que viste (undefined) debe venir de aquí, si estudiante.id no es válido
+                const { data: notasData, error: notasError } = await supabase
+                    .from("notas")
+                    .select("nota, materias(nombre)")
+                    .eq("estudiante_id", estudiante.id); // Aquí es donde se usa estudiante.id
+
+                if (notasError) {
+                    console.error("Error al obtener notas:", notasError);
+                    throw notasError;
+                }
+
+                subjectsGrid.innerHTML = ''; // Limpiar el mensaje de "Cargando notas..."
+
+                // Crear dinámicamente las tarjetas de materias
+                Object.keys(subjectIdToSupabaseNameMap).forEach(subjectSlug => {
+                    const supabaseMateriaName = subjectIdToSupabaseNameMap[subjectSlug];
+                    const notaMateria = notasData.find(
+                        (nota) => nota.materias && nota.materias.nombre.trim().toLowerCase() === supabaseMateriaName.trim().toLowerCase()
+                    );
+
+                    let notaCualitativa = "N/A";
+                    let iconSrc = `iconos/icono-${subjectSlug}-gris.png`; // Icono gris por defecto
+
+                    if (notaMateria) {
+                        notaCualitativa = notaMateria.nota;
+                        if (notaCualitativa === "DS" || notaCualitativa === "DA") { // Desempeño Superior o Alto
+                            iconSrc = `iconos/icono-${subjectSlug}-verde.png`;
+                        } else if (notaCualitativa === "DB") { // Desempeño Básico
+                            iconSrc = `iconos/icono-${subjectSlug}-naranja.png`;
+                        } else if (notaCualitativa === "DBJ") { // Desempeño Bajo
+                            iconSrc = `iconos/icono-${subjectSlug}-rojo.png`;
+                        }
+                    }
+
+                    const card = document.createElement('div');
+                    card.classList.add('subject-card');
+                    card.innerHTML = `
+                        <img src="${iconSrc}" alt="${supabaseMateriaName}">
+                        <p>${supabaseMateriaName}</p>
+                        <p style="font-size: 0.9em; color: #777;">Nota: ${notaCualitativa}</p>
+                    `;
+                    subjectsGrid.appendChild(card);
+                });
+
+                if (notasData.length === 0) {
+                    subjectsGrid.innerHTML = '<p style="text-align: center; color: #777;">No se encontraron notas para este estudiante.</p>';
+                }
+
+
+            } catch (error) {
+                console.error("Error al cargar notas del estudiante:", error);
+                subjectsGrid.innerHTML = `<p style="text-align: center; color: #e74c3c;">Error al cargar las notas: ${error.message}.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
